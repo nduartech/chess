@@ -18,9 +18,9 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody) {
 		if playerWhite {
 			err := session.Write([]byte("Valid Moves:" + fmt.Sprint(game.ValidMoves())))
 			if err != nil {
-				err := m.Close()
-				if err != nil {
-					panic(err)
+				err2 := m.Close()
+				if err2 != nil {
+					panic(err2)
 				}
 				panic(err)
 			}
@@ -29,17 +29,17 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody) {
 			fmt.Println(move.String())
 			err := session.Write([]byte(move.String()))
 			if err != nil {
-				err := m.Close()
-				if err != nil {
-					panic(err)
+				err2 := m.Close()
+				if err2 != nil {
+					panic(err2)
 				}
 				panic(err)
 			}
 			err = session.Write([]byte("Valid Moves:" + fmt.Sprint(game.ValidMoves())))
 			if err != nil {
-				err := m.Close()
-				if err != nil {
-					panic(err)
+				err2 := m.Close()
+				if err2 != nil {
+					panic(err2)
 				}
 				panic(err)
 			}
@@ -52,9 +52,9 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody) {
 		fmt.Println("MOVE MADE" + string(bytes))
 		err := game.MoveStr(string(bytes))
 		if err != nil {
-			err := m.Close()
-			if err != nil {
-				panic(err)
+			err2 := m.Close()
+			if err2 != nil {
+				panic(err2)
 			}
 			panic(err)
 		}
@@ -63,9 +63,9 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody) {
 			move := chessBot.MakeMove(game)
 			err := session.Write([]byte(move.String()))
 			if err != nil {
-				err := m.Close()
-				if err != nil {
-					panic(err)
+				err2 := m.Close()
+				if err2 != nil {
+					panic(err2)
 				}
 				panic(err)
 			}
@@ -73,20 +73,36 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody) {
 			if game.Outcome() == chess.NoOutcome {
 				err = session.Write([]byte("Valid Moves:" + fmt.Sprint(game.ValidMoves())))
 				if err != nil {
-					err := m.Close()
-					if err != nil {
-						panic(err)
+					err2 := m.Close()
+					if err2 != nil {
+						panic(err2)
 					}
 					panic(err)
 				}
 			} else {
 				fmt.Println(game.Position().Board().Draw())
 				fmt.Printf("Game completed. %s by %s.\n", game.Outcome(), game.Method())
+				err := session.Write([]byte(fmt.Sprintf("Game completed. %s by %s.\n", game.Outcome(), game.Method())))
+				if err != nil {
+					err2 := m.Close()
+					if err2 != nil {
+						panic(err2)
+					}
+					panic(err)
+				}
 				fmt.Println(game.String())
 			}
 		} else {
 			fmt.Println(game.Position().Board().Draw())
 			fmt.Printf("Game completed. %s by %s.\n", game.Outcome(), game.Method())
+			err := session.Write([]byte(fmt.Sprintf("Game completed. %s by %s.\n", game.Outcome(), game.Method())))
+			if err != nil {
+				err2 := m.Close()
+				if err2 != nil {
+					panic(err2)
+				}
+				panic(err)
+			}
 			fmt.Println(game.String())
 		}
 		fmt.Println(game.String())

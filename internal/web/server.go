@@ -10,6 +10,12 @@ import (
 
 func Run() {
 	m := melody.New()
+	defer func(m *melody.Melody) {
+		err := m.Close()
+		if err != nil {
+			panic(err)
+		}
+	}(m)
 	homeComponent := Home()
 	newGameComponent := components.NewGameOptions()
 	botDifficulty := components.ChooseBotDifficulty()
