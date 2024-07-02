@@ -2,11 +2,12 @@ package components
 
 import (
 	"fmt"
+	"math/rand"
+	"time"
+
 	"github.com/notnil/chess"
 	"github.com/notnil/chess/uci"
 	"github.com/olahol/melody"
-	"math/rand"
-	"time"
 )
 
 func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody) {
@@ -78,6 +79,10 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody) {
 					}
 					panic(err)
 				}
+			} else {
+				fmt.Println(game.Position().Board().Draw())
+				fmt.Printf("Game completed. %s by %s.\n", game.Outcome(), game.Method())
+				fmt.Println(game.String())
 			}
 		} else {
 			fmt.Println(game.Position().Board().Draw())
