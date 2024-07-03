@@ -8,9 +8,7 @@ package web
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import (
-	"layouts"
-)
+import "layouts"
 
 func Home() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
@@ -42,7 +40,7 @@ func Home() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"w-10/12 h-full bg-slate-900 flex flex-col justify-center items-center align-middle space-y-10\"><div class=\"w-fit h-8/12 flex flex-col justify-center items-center align-middle space-y-10\" id=\"start\"><h1 class=\"text-lg text-white\">YACA (Yet Another Chess App)</h1><div class=\"rounded w-full px-10 h-20 bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\" hx-trigger=\"click\" hx-get=\"/new-game\" hx-target=\"#start\" hx-swap=\"innerHTML\">New Game</div></div></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

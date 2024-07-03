@@ -26,7 +26,7 @@ func MainLayout(children ...templ.Component) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><title>YACA</title><style>\n            [un-cloak] {\n                display: none !important;\n            }\n\n\n            .jsm {\n                font-family: \"Noto Sans\", sans-serif;\n                font-optical-sizing: auto;\n                font-weight: 500;\n                font-style: normal;\n                font-variation-settings:\n                \"wdth\" 100;\n            }\n\n            .gu-mirror{position:fixed!important;margin:0!important;z-index:9999!important;opacity:.8}.gu-hide{display:none!important}.gu-unselectable{-webkit-user-select:none!important;-moz-user-select:none!important;-ms-user-select:none!important;user-select:none!important}.gu-transit{opacity:.2}\n        </style><link rel=\"icon\" href=\"../assets/favicon.ico\" type=\"image/x-icon\"><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin><link href=\"https://fonts.googleapis.com/css2?family=Noto+Sans:wght@500&amp;display=swap\" rel=\"stylesheet\"><!--    <link rel=\"manifest\" href=\"./assets/site.webmanifest\">--></head><body class=\"jsm\" un-cloak><div class=\"w-100vw h-100vh bg-black flex flex-row justify-center items-center align-middle\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -34,7 +34,7 @@ func MainLayout(children ...templ.Component) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><script src=\"https://cdn.jsdelivr.net/npm/@unocss/runtime/preset-wind.global.js\"></script><link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/@unocss/reset/tailwind.min.css\"><script>\n        window.__unocss = {\n            presets: [\n                () => window.__unocss_runtime.presets.presetWind({\n                    cdn: 'https://esm.sh/'\n                }),\n            ],\n        }\n    </script><script src=\"https://cdn.jsdelivr.net/npm/@unocss/runtime/core.global.js\"></script><script src=\"https://unpkg.com/htmx.org@2.0.0\" integrity=\"sha384-wS5l5IKJBvK6sPTKa2WZ1js3d947pvWXbPJ1OmWfEuxLgeHcEbjUUA5i9V5ZkpCw\" crossorigin=\"anonymous\"></script></body></html>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
