@@ -40,7 +40,7 @@ func ChooseBotDifficulty() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"rounded w-full px-10 h-20 bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\" hx-trigger=\"click\" hx-get=\"/bot-game/0\" hx-target=\"#start\" hx-swap=\"innerHTML\" hx-push-url=\"true\">Easiest (Random Moves)</div><div class=\"rounded w-full px-10 h-20 bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\" hx-trigger=\"click\" hx-get=\"/bot-game/1\" hx-target=\"#start\" hx-swap=\"innerHTML\" hx-push-url=\"true\">Easy (ELO: 1320)</div><div class=\"rounded w-full px-10 h-20 bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\" hx-trigger=\"click\" hx-get=\"/bot-game/2\" hx-target=\"#start\" hx-swap=\"innerHTML\" hx-push-url=\"true\">Medium (ELO: 2255)</div><div class=\"rounded w-full px-10 h-20 bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\" hx-trigger=\"click\" hx-get=\"/bot-game/3\" hx-target=\"#start\" hx-swap=\"innerHTML\" hx-push-url=\"true\">Hard (ELO: 3190)</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

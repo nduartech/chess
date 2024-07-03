@@ -42,7 +42,7 @@ func NewGameOptions() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"rounded w-full px-10 h-20 bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\" hx-trigger=\"click\" hx-get=\"/set-difficulty\" hx-target=\"#start\" hx-swap=\"innerHTML\" hx-push-url=\"true\">Play Bot</div><div class=\"rounded w-full px-10 h-20 bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\">Create P2P Match</div><div class=\"rounded w-full px-10 h-20 bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\">Join P2P Match</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

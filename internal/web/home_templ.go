@@ -40,7 +40,7 @@ func Home() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1 class=\"text-lg text-white\">YACA (Yet Another Chess App)</h1><div class=\"rounded w-full px-10 h-20 bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\" hx-trigger=\"click\" hx-get=\"/new-game\" hx-target=\"#start\" hx-swap=\"innerHTML\" hx-push-url=\"true\">New Game</div>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

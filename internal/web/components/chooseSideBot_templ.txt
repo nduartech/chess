@@ -1,3 +1,0 @@
-<div class=\"rounded w-full px-10 h-20 bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\" hx-trigger=\"click\" hx-get=\"
-\" hx-target=\"#start\" hx-swap=\"innerHTML\" hx-push-url=\"true\">White</div><div class=\"rounded w-full px-10 h-20 bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\" hx-trigger=\"click\" hx-get=\"
-\" hx-target=\"#start\" hx-swap=\"innerHTML\" hx-push-url=\"true\">Black</div>
