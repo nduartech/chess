@@ -983,7 +983,9 @@ templ NewBotGame(difficulty int, playAsWhite bool, m *melody.Melody) {
   let url = "ws://" + window.location.host + "/ws";
   let ws = new WebSocket(url);
   window.onbeforeunload = () => ws.close();
-  ws.onclose = function () {alert("Game terminated in app, connection was closed, please refresh and try again");}
+  ws.onclose = function () {
+    alert("Game terminated in app, connection was closed, please refresh and try again");
+  }
   let containers = [];
   let origContainers = [];
   let targets = [];

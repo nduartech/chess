@@ -3,10 +3,13 @@ package web
 import (
 	"components"
 	"fmt"
+	"net/http"
+
 	"github.com/a-h/templ"
 	"github.com/olahol/melody"
-	"net/http"
 )
+
+// Need to find a way to maintain state between requests
 
 func Run() {
 	m := melody.New()
@@ -16,6 +19,7 @@ func Run() {
 			panic(err)
 		}
 	}(m)
+
 	homeComponent := Home()
 	newGameComponent := components.NewGameOptions()
 	botDifficulty := components.ChooseBotDifficulty()
@@ -57,5 +61,4 @@ func Run() {
 	if err != nil {
 		panic(err)
 	}
-
 }
