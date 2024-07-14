@@ -1,13 +1,14 @@
 package components
 
 import (
+  "engine"
 	"github.com/olahol/melody"
 	"layouts"
 )
 
 templ NewBotGame(difficulty int, playAsWhite bool, m *melody.Melody) {
 	@layouts.MainLayout() {
-		{{ ChessMatchWithBot(difficulty, playAsWhite, m) }}
+		{{ engine.ChessMatchWithBot(difficulty, playAsWhite, m) }}
 		<div
 			class="flex flex-row justify-center items-center p-4 m-20 bg-slate-600 hover:bg-slate-700 text-white text-md rounded" id="newGameButton" hx-trigger="click"
 			hx-get="/new-game"

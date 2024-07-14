@@ -9,6 +9,7 @@ import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
 import (
+	"engine"
 	"github.com/olahol/melody"
 	"layouts"
 )
@@ -43,7 +44,7 @@ func NewBotGame(difficulty int, playAsWhite bool, m *melody.Melody) templ.Compon
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			ChessMatchWithBot(difficulty, playAsWhite, m)
+			engine.ChessMatchWithBot(difficulty, playAsWhite, m)
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-row justify-center items-center p-4 m-20 bg-slate-600 hover:bg-slate-700 text-white text-md rounded\" id=\"newGameButton\" hx-trigger=\"click\" hx-get=\"/new-game\" hx-target=\"#start\" hx-swap=\"innerHTML\" hx-push-url=\"true\" hidden>New Game</div><div class=\"size-20rem md:size-40rem lg:size-50rem grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] grid-rows-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] board\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
