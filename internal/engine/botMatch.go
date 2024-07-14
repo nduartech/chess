@@ -15,6 +15,14 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody) {
 	game := chess.NewGame()
 	m.HandleConnect(func(session *melody.Session) {
 		fmt.Println(game.String())
+		err := session.Write([]byte("Init:" + fmt.Sprint(game.Position().Board().SquareMap())))
+		if err != nil {
+			err2 := m.Close()
+			if err2 != nil {
+				panic(err2)
+			}
+			panic(err)
+		}
 		if playerWhite {
 			err := session.Write([]byte("Valid Moves:" + fmt.Sprint(game.ValidMoves())))
 			if err != nil {
@@ -44,7 +52,6 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody) {
 				panic(err)
 			}
 		}
-		fmt.Println(game.String())
 	})
 
 	m.HandleMessage(func(session *melody.Session, bytes []byte) {
@@ -133,7 +140,12 @@ func getChessUCIEngine(difficulty int) *uci.Engine {
 		if err != nil {
 			panic(err)
 		}
-		defer eng.Close()
+		defer func(eng *uci.Engine) {
+			err := eng.Close()
+			if err != nil {
+				panic(err)
+			}
+		}(eng)
 		// initialize uci with new game
 		if err := eng.Run(uci.CmdSetOption{Name: "UCI_LimitStrength", Value: "true"},
 			uci.CmdSetOption{Name: "UCI_Elo", Value: "1320"},
@@ -146,7 +158,12 @@ func getChessUCIEngine(difficulty int) *uci.Engine {
 		if err != nil {
 			panic(err)
 		}
-		defer eng.Close()
+		defer func(eng *uci.Engine) {
+			err := eng.Close()
+			if err != nil {
+				panic(err)
+			}
+		}(eng)
 		// initialize uci with new game
 		if err := eng.Run(uci.CmdSetOption{Name: "UCI_LimitStrength", Value: "true"},
 			uci.CmdSetOption{Name: "UCI_Elo", Value: "2255"},
@@ -159,7 +176,12 @@ func getChessUCIEngine(difficulty int) *uci.Engine {
 		if err != nil {
 			panic(err)
 		}
-		defer eng.Close()
+		defer func(eng *uci.Engine) {
+			err := eng.Close()
+			if err != nil {
+				panic(err)
+			}
+		}(eng)
 		// initialize uci with new game
 		if err := eng.Run(uci.CmdSetOption{Name: "UCI_LimitStrength", Value: "true"},
 			uci.CmdSetOption{Name: "UCI_Elo", Value: "3190"},
