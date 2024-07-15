@@ -7,9 +7,9 @@ import (
 	"layouts"
 )
 
-templ NewBotGame(difficulty int, playAsWhite bool, m *melody.Melody, g *db.GameState) {
+templ NewBotGame(difficulty int, playAsWhite bool, m *melody.Melody, g *db.GameStateRow, d *db.DBConn) {
 	@layouts.MainLayout() {
-		{{ engine.ChessMatchWithBot(difficulty, playAsWhite, m, g) }}
+		{{ engine.ChessMatchWithBot(difficulty, playAsWhite, m, g, d) }}
 		<div
 			class="flex flex-row justify-center items-center p-4 m-20 bg-slate-600 hover:bg-slate-700 text-white text-md rounded" id="newGameButton" hx-trigger="click"
 			hx-get="/new-game"

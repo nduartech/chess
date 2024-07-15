@@ -35,7 +35,6 @@ func Run() {
 		if err != nil {
 			panic(err)
 		}
-		defer local.Close()
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			gameState, err := local.GetRecentGame()
 			if err != nil {
@@ -43,7 +42,7 @@ func Run() {
 				next.ServeHTTP(w, r)
 				return
 			}
-			bot := components.NewBotGame(gameState.GetBotDifficulty(), gameState.GetPlayerSide(), m, gameState)
+			bot := components.NewBotGame(gameState.GetBotDifficulty(), gameState.GetPlayerSide(), m, gameState, local)
 			templ.Handler(bot).ServeHTTP(w, r)
 		})
 	}
@@ -67,7 +66,6 @@ func Run() {
 		if err != nil {
 			panic(err)
 		}
-		defer local.Close()
 		gameState, err := local.GetRecentGame()
 		if err != nil {
 			fmt.Println(err)
@@ -78,7 +76,7 @@ func Run() {
 			fmt.Println(err)
 			http.NotFoundHandler().ServeHTTP(w, r)
 		}
-		bot := components.NewBotGame(diff, r.PathValue("color") == "white", m, gameState)
+		bot := components.NewBotGame(diff, r.PathValue("color") == "white", m, gameState, local)
 		templ.Handler(bot).ServeHTTP(w, r)
 	})
 	// http.Handle("/bot-game/0/black", templ.Handler(easiestBotB))

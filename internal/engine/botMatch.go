@@ -4,6 +4,7 @@ import (
 	"db"
 	"fmt"
 	"math/rand"
+	"strings"
 	"time"
 
 	"github.com/notnil/chess"
@@ -11,11 +12,26 @@ import (
 	"github.com/olahol/melody"
 )
 
-func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db.GameState) {
+func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db.GameStateRow, d *db.DBConn) {
 	chessBot := NewChessAI(difficulty)
-	game := chess.NewGame()
+	var game *chess.Game
+	if g == nil {
+		game = chess.NewGame()
+		gs := db.NewGameState(true, playerWhite, difficulty, time.Now(), game.String(), false)
+		index, err := d.AddGame(gs)
+		if err != nil {
+			panic(err)
+		}
+		g = &db.GameStateRow{index, *gs}
+	} else {
+		pgn, err := chess.PGN(strings.NewReader(g.GetPgn()))
+		if err != nil {
+			panic(err)
+		}
+		game = chess.NewGame(pgn)
+	}
 	m.HandleConnect(func(session *melody.Session) {
-		fmt.Println(game.String())
+
 		err := session.Write([]byte("Init:" + fmt.Sprint(game.Position().Board().SquareMap())))
 		if err != nil {
 			err2 := m.Close()
@@ -35,7 +51,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 			}
 		} else {
 			move := chessBot.MakeMove(game)
-			fmt.Println(move.String())
+
 			err := session.Write([]byte(move.String()))
 			if err != nil {
 				err2 := m.Close()
@@ -55,9 +71,21 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 		}
 	})
 
+	m.HandleDisconnect(func(session *melody.Session) {
+		d.UpdateGame(g.ID,
+			db.NewGameState(
+				g.GetLocal(),
+				g.GetPlayerSide(),
+				g.GetBotDifficulty(),
+				g.GetStarted(),
+				game.String(),
+				(game.Outcome() != chess.NoOutcome),
+			),
+		)
+	})
+
 	m.HandleMessage(func(session *melody.Session, bytes []byte) {
-		fmt.Println(game.Position().Board())
-		fmt.Println("MOVE MADE" + string(bytes))
+
 		err := game.MoveStr(string(bytes))
 		if err != nil {
 			err2 := m.Close()
@@ -66,7 +94,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 			}
 			panic(err)
 		}
-		fmt.Println(game.ValidMoves())
+
 		if game.Outcome() == chess.NoOutcome {
 			move := chessBot.MakeMove(game)
 			err := session.Write([]byte(move.String()))
@@ -77,7 +105,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 				}
 				panic(err)
 			}
-			fmt.Println(move.String())
+
 			if game.Outcome() == chess.NoOutcome {
 				err = session.Write([]byte("Valid Moves:" + fmt.Sprint(game.ValidMoves())))
 				if err != nil {
@@ -88,7 +116,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 					panic(err)
 				}
 			} else {
-				fmt.Println(game.Position().Board().Draw())
+
 				fmt.Printf("Game completed. %s by %s.\n", game.Outcome(), game.Method())
 				err := session.Write([]byte(fmt.Sprintf("Game completed. %s by %s.\n", game.Outcome(), game.Method())))
 				if err != nil {
@@ -98,10 +126,10 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 					}
 					panic(err)
 				}
-				fmt.Println(game.String())
+
 			}
 		} else {
-			fmt.Println(game.Position().Board().Draw())
+
 			fmt.Printf("Game completed. %s by %s.\n", game.Outcome(), game.Method())
 			err := session.Write([]byte(fmt.Sprintf("Game completed. %s by %s.\n", game.Outcome(), game.Method())))
 			if err != nil {
@@ -111,9 +139,9 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 				}
 				panic(err)
 			}
-			fmt.Println(game.String())
+
 		}
-		fmt.Println(game.String())
+
 	})
 }
 
