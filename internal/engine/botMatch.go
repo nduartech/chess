@@ -116,6 +116,16 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 				}
 				panic(err)
 			}
+			d.UpdateGame(g.ID,
+				db.NewGameState(
+					g.GetLocal(),
+					g.GetPlayerSide(),
+					g.GetBotDifficulty(),
+					g.GetStarted(),
+					game.String(),
+					(game.Outcome() != chess.NoOutcome),
+				),
+			)
 
 			if game.Outcome() == chess.NoOutcome {
 				err = session.Write([]byte("Valid Moves:" + fmt.Sprint(game.ValidMoves())))
@@ -168,13 +178,13 @@ func NewChessAI(difficulty int) *ChessAI {
 }
 
 func getChessUCIEngine(difficulty int) *uci.Engine {
-	engine, err := uci.New("stockfish")
+	engine, err := uci.New("/home/nathan/Projects/chessGame/Pleco/target/release/pleco")
 	if err != nil {
 		panic(err)
 	}
 	if difficulty == 1 {
 		// set up engine to use stockfish exe
-		eng, err := uci.New("stockfish")
+		eng, err := uci.New("/home/nathan/Projects/chessGame/Pleco/target/release/pleco")
 		if err != nil {
 			panic(err)
 		}
@@ -192,7 +202,7 @@ func getChessUCIEngine(difficulty int) *uci.Engine {
 		}
 	} else if difficulty == 2 {
 		// set up engine to use stockfish exe
-		eng, err := uci.New("stockfish")
+		eng, err := uci.New("/home/nathan/Projects/chessGame/Pleco/target/release/pleco")
 		if err != nil {
 			panic(err)
 		}
@@ -210,7 +220,7 @@ func getChessUCIEngine(difficulty int) *uci.Engine {
 		}
 	} else {
 		// set up engine to use stockfish exe
-		eng, err := uci.New("stockfish")
+		eng, err := uci.New("/home/nathan/Projects/chessGame/Pleco/target/release/pleco")
 		if err != nil {
 			panic(err)
 		}

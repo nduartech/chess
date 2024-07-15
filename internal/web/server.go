@@ -70,7 +70,7 @@ func Run() {
 			fmt.Println(err)
 			gameState = nil
 		}
-		if gameState.GetEnded() {
+		if err == nil && gameState.GetEnded() {
 			gameState = nil
 		}
 		diff, err := strconv.Atoi(r.PathValue("difficulty"))
