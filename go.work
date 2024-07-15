@@ -1,9 +1,10 @@
-go 1.22
+go 1.22.5
 
 use (
 	.
-	internal/web/components
 	internal/engine
-	internal/web/layouts
 	internal/web
+	internal/web/components
+	internal/web/layouts
+	internal/db
 )

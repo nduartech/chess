@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"db"
 	"fmt"
 	"math/rand"
 	"time"
@@ -10,7 +11,7 @@ import (
 	"github.com/olahol/melody"
 )
 
-func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody) {
+func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db.GameState) {
 	chessBot := NewChessAI(difficulty)
 	game := chess.NewGame()
 	m.HandleConnect(func(session *melody.Session) {
