@@ -95,6 +95,17 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 			panic(err)
 		}
 
+		d.UpdateGame(g.ID,
+			db.NewGameState(
+				g.GetLocal(),
+				g.GetPlayerSide(),
+				g.GetBotDifficulty(),
+				g.GetStarted(),
+				game.String(),
+				(game.Outcome() != chess.NoOutcome),
+			),
+		)
+
 		if game.Outcome() == chess.NoOutcome {
 			move := chessBot.MakeMove(game)
 			err := session.Write([]byte(move.String()))
@@ -116,7 +127,6 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 					panic(err)
 				}
 			} else {
-
 				fmt.Printf("Game completed. %s by %s.\n", game.Outcome(), game.Method())
 				err := session.Write([]byte(fmt.Sprintf("Game completed. %s by %s.\n", game.Outcome(), game.Method())))
 				if err != nil {
@@ -129,7 +139,6 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 
 			}
 		} else {
-
 			fmt.Printf("Game completed. %s by %s.\n", game.Outcome(), game.Method())
 			err := session.Write([]byte(fmt.Sprintf("Game completed. %s by %s.\n", game.Outcome(), game.Method())))
 			if err != nil {

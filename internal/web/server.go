@@ -37,8 +37,7 @@ func Run() {
 		}
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			gameState, err := local.GetRecentGame()
-			if err != nil {
-				fmt.Println(err)
+			if err != nil || gameState.GetEnded() {
 				next.ServeHTTP(w, r)
 				return
 			}
@@ -69,6 +68,9 @@ func Run() {
 		gameState, err := local.GetRecentGame()
 		if err != nil {
 			fmt.Println(err)
+			gameState = nil
+		}
+		if gameState.GetEnded() {
 			gameState = nil
 		}
 		diff, err := strconv.Atoi(r.PathValue("difficulty"))
