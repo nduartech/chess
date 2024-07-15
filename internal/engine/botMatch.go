@@ -178,13 +178,13 @@ func NewChessAI(difficulty int) *ChessAI {
 }
 
 func getChessUCIEngine(difficulty int) *uci.Engine {
-	engine, err := uci.New("/home/nathan/Projects/chessGame/Pleco/target/release/pleco")
+	engine, err := uci.New("stockfish")
 	if err != nil {
 		panic(err)
 	}
 	if difficulty == 1 {
 		// set up engine to use stockfish exe
-		eng, err := uci.New("/home/nathan/Projects/chessGame/Pleco/target/release/pleco")
+		eng, err := uci.New("stockfish")
 		if err != nil {
 			panic(err)
 		}
@@ -202,7 +202,7 @@ func getChessUCIEngine(difficulty int) *uci.Engine {
 		}
 	} else if difficulty == 2 {
 		// set up engine to use stockfish exe
-		eng, err := uci.New("/home/nathan/Projects/chessGame/Pleco/target/release/pleco")
+		eng, err := uci.New("stockfish")
 		if err != nil {
 			panic(err)
 		}
@@ -220,7 +220,7 @@ func getChessUCIEngine(difficulty int) *uci.Engine {
 		}
 	} else {
 		// set up engine to use stockfish exe
-		eng, err := uci.New("/home/nathan/Projects/chessGame/Pleco/target/release/pleco")
+		eng, err := uci.New("stockfish")
 		if err != nil {
 			panic(err)
 		}
