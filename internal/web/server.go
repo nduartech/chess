@@ -19,10 +19,7 @@ func Run() {
 	homeComponent := Home()
 	newGameComponent := components.NewGameOptions()
 	botDifficulty := components.ChooseBotDifficulty()
-	easiestSide := components.ChooseSideBot(0)
-	easySide := components.ChooseSideBot(1)
-	mediumSide := components.ChooseSideBot(2)
-	HardSide := components.ChooseSideBot(3)
+
 	m := melody.New()
 	defer func(m *melody.Melody) {
 		err := m.Close()
@@ -45,21 +42,20 @@ func Run() {
 			templ.Handler(bot).ServeHTTP(w, r)
 		})
 	}
-	// easiestBotW := components.NewBotGame(0, true, m, nil)
-	// easiestBotB := components.NewBotGame(0, false, m, nil)
-	// easyBotW := components.NewBotGame(1, true, m, nil)
-	// easyBotB := components.NewBotGame(1, false, m, nil)
-	// mediumBotW := components.NewBotGame(2, true, m, nil)
-	// mediumBotB := components.NewBotGame(2, false, m, nil)
-	// hardBotW := components.NewBotGame(3, true, m, nil)
-	// hardBotB := components.NewBotGame(3, false, m, nil)
+
 	http.Handle("/", checkForGame(templ.Handler(homeComponent)))
 	http.Handle("/new-game", checkForGame(templ.Handler(newGameComponent)))
 	http.Handle("/set-difficulty", checkForGame(templ.Handler(botDifficulty)))
-	http.Handle("/bot-game/0", checkForGame(templ.Handler(easiestSide)))
-	http.Handle("/bot-game/1", checkForGame(templ.Handler(easySide)))
-	http.Handle("/bot-game/2", checkForGame(templ.Handler(mediumSide)))
-	http.Handle("/bot-game/3", checkForGame(templ.Handler(HardSide)))
+
+	http.HandleFunc("/bot-game/{difficulty}", func(w http.ResponseWriter, r *http.Request) {
+		diff, err := strconv.Atoi(r.PathValue("difficulty"))
+		if err != nil {
+			fmt.Println(err)
+			http.NotFoundHandler().ServeHTTP(w, r)
+		}
+		page := components.ChooseSideBot(diff)
+		checkForGame(templ.Handler(page)).ServeHTTP(w, r)
+	})
 	http.HandleFunc("/bot-game/{difficulty}/{color}", func(w http.ResponseWriter, r *http.Request) {
 		local, err := db.InitDatabase("./local.sqlite3")
 		if err != nil {
@@ -81,13 +77,6 @@ func Run() {
 		bot := components.NewBotGame(diff, r.PathValue("color") == "white", m, gameState, local)
 		templ.Handler(bot).ServeHTTP(w, r)
 	})
-	// http.Handle("/bot-game/0/black", templ.Handler(easiestBotB))
-	// http.Handle("/bot-game/1/white", templ.Handler(easyBotW))
-	// http.Handle("/bot-game/1/black", templ.Handler(easyBotB))
-	// http.Handle("/bot-game/2/white", templ.Handler(mediumBotW))
-	// http.Handle("/bot-game/2/black", templ.Handler(mediumBotB))
-	// http.Handle("/bot-game/3/white", templ.Handler(hardBotW))
-	// http.Handle("/bot-game/3/black", templ.Handler(hardBotB))
 
 	fmt.Println("Listening on :3000")
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
