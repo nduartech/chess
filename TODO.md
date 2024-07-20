@@ -1,5 +1,5 @@
 # Bugs
-1) Fix bug where game save and restore causes player to switch sides with bot
+1) Fix bug where game save and restore causes player to switch sides with bot ~&#10003; 
 --------------------------------------------------------------------------------
 # Add Tests
 1) Add unit tests for all modules
