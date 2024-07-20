@@ -39,6 +39,9 @@ require (
 
 replace engine => ./internal/engine
 
-require db v1.0.0 // indirect
+require (
+	db v1.0.0 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
+)
 
 replace db => ./internal/db

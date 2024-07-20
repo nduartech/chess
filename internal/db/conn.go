@@ -142,4 +142,5 @@ func (d *ConnSQLite) Close() {
 	if err != nil {
 		panic(err)
 	}
+	d.db = nil
 }
