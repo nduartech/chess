@@ -12,7 +12,7 @@ import (
 	"github.com/olahol/melody"
 )
 
-func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db.GameStateRow, d *db.DBConn) {
+func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db.GameStateRow, d db.Conn) {
 	chessBot := NewChessAI(difficulty)
 	var game *chess.Game
 	if g == nil {
@@ -22,7 +22,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 		if err != nil {
 			panic(err)
 		}
-		g = &db.GameStateRow{index, *gs}
+		g = &db.GameStateRow{ID: index, GameState: *gs}
 	} else {
 		pgn, err := chess.PGN(strings.NewReader(g.GetPgn()))
 		if err != nil {
@@ -51,8 +51,20 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 			}
 		} else {
 			move := chessBot.MakeMove(game)
-
-			err := session.Write([]byte(move.String()))
+			err := d.UpdateGame(g.ID,
+				db.NewGameState(
+					g.GetLocal(),
+					g.GetPlayerSide(),
+					g.GetBotDifficulty(),
+					g.GetStarted(),
+					game.String(),
+					game.Outcome() != chess.NoOutcome,
+				),
+			)
+			if err != nil {
+				panic(err)
+			}
+			err = session.Write([]byte(move.String()))
 			if err != nil {
 				err2 := m.Close()
 				if err2 != nil {
@@ -79,7 +91,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 				g.GetBotDifficulty(),
 				g.GetStarted(),
 				game.String(),
-				(game.Outcome() != chess.NoOutcome),
+				game.Outcome() != chess.NoOutcome,
 			),
 		)
 	})
@@ -102,7 +114,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 				g.GetBotDifficulty(),
 				g.GetStarted(),
 				game.String(),
-				(game.Outcome() != chess.NoOutcome),
+				game.Outcome() != chess.NoOutcome,
 			),
 		)
 
@@ -123,7 +135,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 					g.GetBotDifficulty(),
 					g.GetStarted(),
 					game.String(),
-					(game.Outcome() != chess.NoOutcome),
+					game.Outcome() != chess.NoOutcome,
 				),
 			)
 

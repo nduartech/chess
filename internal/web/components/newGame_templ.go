@@ -42,7 +42,7 @@ func NewGameOptions() templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"rounded w-full px-10 h-20 text-black bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\" hx-trigger=\"click\" hx-get=\"/set-difficulty\" hx-target=\"#start\" hx-swap=\"innerHTML\" hx-push-url=\"true\">Play Bot</div><div class=\"rounded w-full px-10 h-20 text-black bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\">Create P2P Match</div><div class=\"rounded w-full px-10 h-20 text-black bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\">Join P2P Match</div>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"rounded w-full px-10 h-20 text-black bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\" hx-trigger=\"click\" hx-get=\"/set-difficulty\" hx-target=\"#start\" hx-swap=\"innerHTML\" hx-push-url=\"true\">Play Bot</div><!--<div\n  class=\"rounded w-full px-10 h-20 text-black bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\">\n  Create P2P Match\n</div>\n<div\n  class=\"rounded w-full px-10 h-20 text-black bg-slate-600 hover:bg-slate-700 flex flex-col justify-center items-center align-middle z-5\">\n  Join P2P Match\n</div> -->")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

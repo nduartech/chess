@@ -11,9 +11,7 @@ import (
 	"github.com/olahol/melody"
 )
 
-var local *db.DBConn
-
-// Need to find a way to maintain state between requests
+var local *db.Conn
 
 func Run() {
 	homeComponent := Home()
@@ -28,7 +26,7 @@ func Run() {
 		}
 	}(m)
 	checkForGame := func(next http.Handler) http.Handler {
-		local, err := db.InitDatabase("./local.sqlite3")
+		local, err := db.InitGameDatabase("./local.sqlite3")
 		if err != nil {
 			panic(err)
 		}
@@ -57,7 +55,7 @@ func Run() {
 		checkForGame(templ.Handler(page)).ServeHTTP(w, r)
 	})
 	http.HandleFunc("/bot-game/{difficulty}/{color}", func(w http.ResponseWriter, r *http.Request) {
-		local, err := db.InitDatabase("./local.sqlite3")
+		local, err := db.InitGameDatabase("./local.sqlite3")
 		if err != nil {
 			panic(err)
 		}

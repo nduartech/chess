@@ -1,35 +1,8 @@
 package db
 
 import (
-	"context"
-	"database/sql"
 	"time"
-
-	_ "modernc.org/sqlite"
 )
-
-type DBConn struct {
-	path string
-	db   *sql.DB
-}
-
-type GameState struct {
-	local         bool
-	playerSide    bool
-	botDifficulty int
-	started       time.Time
-	pgn           string
-	ended         bool
-}
-
-type GameStateRow struct {
-	ID int64
-	GameState
-}
-
-func NewDBConn(db *sql.DB, path string) *DBConn {
-	return &DBConn{path, db}
-}
 
 func NewGameState(local bool, playerSide bool, botDifficulty int, started time.Time, pgn string, ended bool) *GameState {
 	return &GameState{local, playerSide, botDifficulty, started, pgn, ended}
@@ -81,96 +54,4 @@ func (g *GameState) SetPgn(pgn string) {
 
 func (g *GameState) SetEnded(ended bool) {
 	g.ended = ended
-}
-
-func InitDatabase(dbPath string) (*DBConn, error) {
-	var err error
-	db, err := sql.Open("sqlite", dbPath)
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = db.ExecContext(
-		context.Background(),
-		`CREATE TABLE IF NOT EXISTS games (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
-		  local BOOLEAN NOT NULL,
-		  player_side BOOLEAN NOT NULL, 
-		  bot_difficulty INTEGER,
-			started DATETIME NOT NULL,
-			pgn TEXT NOT NULL, 
-			ended BOOLEAN NOT NULL
-		)`,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer db.Close()
-	return &DBConn{dbPath, db}, nil
-}
-
-func (d *DBConn) Open() error {
-	conn, err := sql.Open("sqlite", d.path)
-	if err != nil {
-		return err
-	}
-	d.db = conn
-	return nil
-}
-
-func (d *DBConn) AddGame(g *GameState) (int64, error) {
-	_ = d.Open()
-	defer d.Close()
-	res, err := d.db.Exec(`INSERT INTO games (local, player_side, bot_difficulty, started, pgn, ended) VALUES (?,?,?,?,?,?);`, g.local, g.playerSide, g.botDifficulty, g.started, g.pgn, g.ended)
-	if err != nil {
-		return 0, err
-	}
-	return res.LastInsertId()
-}
-
-func (d *DBConn) UpdateGame(id int64, g *GameState) error {
-	_ = d.Open()
-	defer d.Close()
-	_, err := d.db.Exec(`UPDATE games SET local=?, player_side=?, bot_difficulty=?, started=?, pgn=?, ended=? WHERE id=?`, g.local, g.playerSide, g.botDifficulty, g.started, g.pgn, g.ended, id)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (d *DBConn) GetRecentGame() (*GameStateRow, error) {
-	_ = d.Open()
-	defer d.Close()
-	var state GameStateRow
-	rows, err := d.db.QueryContext(context.Background(), "SELECT COUNT(*) FROM games")
-	if err != nil {
-		return nil, err
-	} else {
-		defer func(rows *sql.Rows) {
-			err := rows.Close()
-			if err != nil {
-				panic(err)
-			}
-		}(rows)
-	}
-	row := d.db.QueryRow("SELECT * FROM games ORDER BY started DESC")
-	err = row.Scan(&state.ID, &state.local, &state.playerSide, &state.botDifficulty, &state.started, &state.pgn, &state.ended)
-	if err != nil {
-		return nil, err
-	}
-	return &state, nil
-}
-
-func (d *DBConn) ClearGameHistory() error {
-	_ = d.Open()
-	defer d.Close()
-	_, err := d.db.Exec("DELETE * FROM games")
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (d *DBConn) Close() {
-	d.db.Close()
 }
