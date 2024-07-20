@@ -81,6 +81,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 				panic(err)
 			}
 		}
+		session.Set("game", game)
 	})
 
 	m.HandleDisconnect(func(session *melody.Session) {
@@ -97,7 +98,11 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 	})
 
 	m.HandleMessage(func(session *melody.Session, bytes []byte) {
-
+		gameSession, ok := session.Get("game")
+		if !ok {
+			panic("game not found")
+		}
+		game := gameSession.(*chess.Game)
 		err := game.MoveStr(string(bytes))
 		if err != nil {
 			err2 := m.Close()
@@ -172,7 +177,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 			}
 
 		}
-
+		session.Set("game", game)
 	})
 }
 
