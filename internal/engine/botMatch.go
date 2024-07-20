@@ -55,16 +55,6 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m *melody.Me
 			g.Turn = !g.Turn
 			g.Ended = game.Outcome() != chess.NoOutcome
 			err := d.UpdateGame(g)
-			//d.UpdateGame(g.ID,
-			//	db.NewGameState(
-			//		g.GetLocal(),
-			//		g.GetPlayerSide(),
-			//		g.GetBotDifficulty(),
-			//		g.GetStarted(),
-			//		game.String(),
-			//		game.Outcome() != chess.NoOutcome,
-			//	),
-			//)
 			if err != nil {
 				panic(err)
 			}
@@ -95,16 +85,6 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m *melody.Me
 		if err != nil {
 			panic(err)
 		}
-		//d.UpdateGame(g.ID,
-		//	db.NewGameState(
-		//		g.GetLocal(),
-		//		g.GetPlayerSide(),
-		//		g.GetBotDifficulty(),
-		//		g.GetStarted(),
-		//		game.String(),
-		//		game.Outcome() != chess.NoOutcome,
-		//	),
-		//)
 	})
 
 	m.HandleMessage(func(session *melody.Session, bytes []byte) {
@@ -128,16 +108,6 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m *melody.Me
 		if err != nil {
 			panic(err)
 		}
-		//d.UpdateGame(g.ID,
-		//	db.NewGameState(
-		//		g.GetLocal(),
-		//		g.GetPlayerSide(),
-		//		g.GetBotDifficulty(),
-		//		g.GetStarted(),
-		//		game.String(),
-		//		game.Outcome() != chess.NoOutcome,
-		//	),
-		//)
 
 		if game.Outcome() == chess.NoOutcome {
 			move := chessBot.MakeMove(game)
@@ -156,16 +126,6 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m *melody.Me
 			if err != nil {
 				panic(err)
 			}
-			//d.UpdateGame(g.ID,
-			//	db.NewGameState(
-			//		g.GetLocal(),
-			//		g.GetPlayerSide(),
-			//		g.GetBotDifficulty(),
-			//		g.GetStarted(),
-			//		game.String(),
-			//		game.Outcome() != chess.NoOutcome,
-			//	),
-			//)
 
 			if game.Outcome() == chess.NoOutcome {
 				err = session.Write([]byte("Valid Moves:" + fmt.Sprint(game.ValidMoves())))
@@ -204,16 +164,20 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m *melody.Me
 	})
 }
 
-type ChessAI struct {
+type ChessAI interface {
+	MakeMove(game *chess.Game) *chess.Move
+}
+
+type ChessAIImpl struct {
 	difficulty int
 	engine     *uci.Engine
 }
 
-func NewChessAI(difficulty int) *ChessAI {
+func NewChessAI(difficulty int) ChessAI {
 	if difficulty == 0 {
-		return &ChessAI{difficulty: difficulty, engine: nil}
+		return &ChessAIImpl{difficulty: difficulty, engine: nil}
 	} else {
-		return &ChessAI{difficulty: difficulty, engine: getChessUCIEngine(difficulty)}
+		return &ChessAIImpl{difficulty: difficulty, engine: getChessUCIEngine(difficulty)}
 	}
 }
 
@@ -280,7 +244,7 @@ func getChessUCIEngine(difficulty int) *uci.Engine {
 	return engine
 }
 
-func (ai *ChessAI) MakeMove(game *chess.Game) *chess.Move {
+func (ai *ChessAIImpl) MakeMove(game *chess.Game) *chess.Move {
 	if ai.engine == nil {
 		moves := game.ValidMoves()
 		move := moves[rand.Intn(len(moves))]
