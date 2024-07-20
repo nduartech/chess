@@ -15,7 +15,7 @@ import (
 	"layouts"
 )
 
-func NewBotGame(difficulty int, playAsWhite bool, m *melody.Melody, g *db.GameStateRow, d db.Conn) templ.Component {
+func NewBotGame(difficulty int, playAsWhite bool, turn bool, m *melody.Melody, g *db.GameStateRow, d db.Conn) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -45,7 +45,7 @@ func NewBotGame(difficulty int, playAsWhite bool, m *melody.Melody, g *db.GameSt
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			engine.ChessMatchWithBot(difficulty, playAsWhite, m, g, d)
+			engine.ChessMatchWithBot(difficulty, playAsWhite, turn, m, g, d)
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex flex-row justify-center items-center p-4 m-20 bg-slate-600 hover:bg-slate-700 text-white text-md rounded\" id=\"newGameButton\" hx-trigger=\"click\" hx-get=\"/new-game\" hx-target=\"#start\" hx-swap=\"innerHTML\" hx-push-url=\"true\" hidden>New Game</div><div class=\"size-20rem md:size-40rem lg:size-50rem grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] grid-rows-[1fr_1fr_1fr_1fr_1fr_1fr_1fr_1fr] board\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err

@@ -32,11 +32,11 @@ func Run() {
 		}
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			gameState, err := local.GetRecentGame()
-			if err != nil || gameState.GetEnded() {
+			if err != nil || gameState.Ended {
 				next.ServeHTTP(w, r)
 				return
 			}
-			bot := components.NewBotGame(gameState.GetBotDifficulty(), gameState.GetPlayerSide(), m, gameState, local)
+			bot := components.NewBotGame(gameState.BotDifficulty, gameState.PlayerSide, gameState.Turn, m, gameState, local)
 			templ.Handler(bot).ServeHTTP(w, r)
 		})
 	}
@@ -64,7 +64,7 @@ func Run() {
 			fmt.Println(err)
 			gameState = nil
 		}
-		if err == nil && gameState.GetEnded() {
+		if err == nil && gameState.Ended {
 			gameState = nil
 		}
 		diff, err := strconv.Atoi(r.PathValue("difficulty"))
@@ -72,7 +72,7 @@ func Run() {
 			fmt.Println(err)
 			http.NotFoundHandler().ServeHTTP(w, r)
 		}
-		bot := components.NewBotGame(diff, r.PathValue("color") == "white", m, gameState, local)
+		bot := components.NewBotGame(diff, r.PathValue("color") == "white", r.PathValue("color") == "white", m, gameState, local)
 		templ.Handler(bot).ServeHTTP(w, r)
 	})
 

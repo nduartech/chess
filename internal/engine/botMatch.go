@@ -12,19 +12,19 @@ import (
 	"github.com/olahol/melody"
 )
 
-func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db.GameStateRow, d db.Conn) {
+func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m *melody.Melody, g *db.GameStateRow, d db.Conn) {
 	chessBot := NewChessAI(difficulty)
 	var game *chess.Game
 	if g == nil {
 		game = chess.NewGame()
-		gs := db.NewGameState(true, playerWhite, difficulty, time.Now(), game.String(), false)
+		gs := &db.GameState{Local: true, PlayerSide: playerWhite, Turn: turn, BotDifficulty: difficulty, Started: time.Now(), Pgn: game.String()}
 		index, err := d.AddGame(gs)
 		if err != nil {
 			panic(err)
 		}
 		g = &db.GameStateRow{ID: index, GameState: *gs}
 	} else {
-		pgn, err := chess.PGN(strings.NewReader(g.GetPgn()))
+		pgn, err := chess.PGN(strings.NewReader(g.Pgn))
 		if err != nil {
 			panic(err)
 		}
@@ -40,7 +40,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 			}
 			panic(err)
 		}
-		if playerWhite {
+		if turn {
 			err := session.Write([]byte("Valid Moves:" + fmt.Sprint(game.ValidMoves())))
 			if err != nil {
 				err2 := m.Close()
@@ -51,16 +51,20 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 			}
 		} else {
 			move := chessBot.MakeMove(game)
-			err := d.UpdateGame(g.ID,
-				db.NewGameState(
-					g.GetLocal(),
-					g.GetPlayerSide(),
-					g.GetBotDifficulty(),
-					g.GetStarted(),
-					game.String(),
-					game.Outcome() != chess.NoOutcome,
-				),
-			)
+			g.Pgn = game.String()
+			g.Turn = !g.Turn
+			g.Ended = game.Outcome() != chess.NoOutcome
+			err := d.UpdateGame(g)
+			//d.UpdateGame(g.ID,
+			//	db.NewGameState(
+			//		g.GetLocal(),
+			//		g.GetPlayerSide(),
+			//		g.GetBotDifficulty(),
+			//		g.GetStarted(),
+			//		game.String(),
+			//		game.Outcome() != chess.NoOutcome,
+			//	),
+			//)
 			if err != nil {
 				panic(err)
 			}
@@ -85,16 +89,22 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 	})
 
 	m.HandleDisconnect(func(session *melody.Session) {
-		d.UpdateGame(g.ID,
-			db.NewGameState(
-				g.GetLocal(),
-				g.GetPlayerSide(),
-				g.GetBotDifficulty(),
-				g.GetStarted(),
-				game.String(),
-				game.Outcome() != chess.NoOutcome,
-			),
-		)
+		g.Pgn = game.String()
+		g.Ended = game.Outcome() != chess.NoOutcome
+		err := d.UpdateGame(g)
+		if err != nil {
+			panic(err)
+		}
+		//d.UpdateGame(g.ID,
+		//	db.NewGameState(
+		//		g.GetLocal(),
+		//		g.GetPlayerSide(),
+		//		g.GetBotDifficulty(),
+		//		g.GetStarted(),
+		//		game.String(),
+		//		game.Outcome() != chess.NoOutcome,
+		//	),
+		//)
 	})
 
 	m.HandleMessage(func(session *melody.Session, bytes []byte) {
@@ -111,17 +121,23 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 			}
 			panic(err)
 		}
-
-		d.UpdateGame(g.ID,
-			db.NewGameState(
-				g.GetLocal(),
-				g.GetPlayerSide(),
-				g.GetBotDifficulty(),
-				g.GetStarted(),
-				game.String(),
-				game.Outcome() != chess.NoOutcome,
-			),
-		)
+		g.Pgn = game.String()
+		g.Turn = !g.Turn
+		g.Ended = game.Outcome() != chess.NoOutcome
+		err = d.UpdateGame(g)
+		if err != nil {
+			panic(err)
+		}
+		//d.UpdateGame(g.ID,
+		//	db.NewGameState(
+		//		g.GetLocal(),
+		//		g.GetPlayerSide(),
+		//		g.GetBotDifficulty(),
+		//		g.GetStarted(),
+		//		game.String(),
+		//		game.Outcome() != chess.NoOutcome,
+		//	),
+		//)
 
 		if game.Outcome() == chess.NoOutcome {
 			move := chessBot.MakeMove(game)
@@ -133,16 +149,23 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, m *melody.Melody, g *db
 				}
 				panic(err)
 			}
-			d.UpdateGame(g.ID,
-				db.NewGameState(
-					g.GetLocal(),
-					g.GetPlayerSide(),
-					g.GetBotDifficulty(),
-					g.GetStarted(),
-					game.String(),
-					game.Outcome() != chess.NoOutcome,
-				),
-			)
+			g.Pgn = game.String()
+			g.Turn = !g.Turn
+			g.Ended = game.Outcome() != chess.NoOutcome
+			err = d.UpdateGame(g)
+			if err != nil {
+				panic(err)
+			}
+			//d.UpdateGame(g.ID,
+			//	db.NewGameState(
+			//		g.GetLocal(),
+			//		g.GetPlayerSide(),
+			//		g.GetBotDifficulty(),
+			//		g.GetStarted(),
+			//		game.String(),
+			//		game.Outcome() != chess.NoOutcome,
+			//	),
+			//)
 
 			if game.Outcome() == chess.NoOutcome {
 				err = session.Write([]byte("Valid Moves:" + fmt.Sprint(game.ValidMoves())))

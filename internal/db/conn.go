@@ -3,14 +3,15 @@ package db
 import (
 	"context"
 	"database/sql"
-	_ "modernc.org/sqlite"
 	"time"
+
+	_ "modernc.org/sqlite"
 )
 
 type Conn interface {
 	Open() error
 	AddGame(g *GameState) (int64, error)
-	UpdateGame(id int64, g *GameState) error
+	UpdateGame(g *GameStateRow) error
 	GetRecentGame() (*GameStateRow, error)
 	ClearGameHistory() error
 	Close()
@@ -22,12 +23,13 @@ type ConnSQLite struct {
 }
 
 type GameState struct {
-	local         bool
-	playerSide    bool
-	botDifficulty int
-	started       time.Time
-	pgn           string
-	ended         bool
+	Local         bool
+	PlayerSide    bool
+	Turn          bool
+	BotDifficulty int
+	Started       time.Time
+	Pgn           string
+	Ended         bool
 }
 
 type GameStateRow struct {
@@ -50,9 +52,10 @@ func InitGameDatabase(dbPath string) (*ConnSQLite, error) {
 		context.Background(),
 		`CREATE TABLE IF NOT EXISTS games (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
-		  local BOOLEAN NOT NULL,
-		  player_side BOOLEAN NOT NULL,
-		  bot_difficulty INTEGER,
+		  	local BOOLEAN NOT NULL,
+		  	player_side BOOLEAN NOT NULL,
+		  	turn BOOLEAN NOT NULL,
+		  	bot_difficulty INTEGER,
 			started DATETIME NOT NULL,
 			pgn TEXT NOT NULL,
 			ended BOOLEAN NOT NULL
@@ -82,17 +85,19 @@ func (d *ConnSQLite) Open() error {
 func (d *ConnSQLite) AddGame(g *GameState) (int64, error) {
 	_ = d.Open()
 	defer d.Close()
-	res, err := d.db.Exec(`INSERT INTO games (local, player_side, bot_difficulty, started, pgn, ended) VALUES (?,?,?,?,?,?);`, g.local, g.playerSide, g.botDifficulty, g.started, g.pgn, g.ended)
+	res, err := d.db.Exec(`INSERT INTO games (local, player_side, turn, bot_difficulty, started, pgn, ended) VALUES (?,?,?,?,?,?,?);`,
+		g.Local, g.PlayerSide, g.Turn, g.BotDifficulty, g.Started, g.Pgn, g.Ended)
 	if err != nil {
 		return 0, err
 	}
 	return res.LastInsertId()
 }
 
-func (d *ConnSQLite) UpdateGame(id int64, g *GameState) error {
+func (d *ConnSQLite) UpdateGame(g *GameStateRow) error {
 	_ = d.Open()
 	defer d.Close()
-	_, err := d.db.Exec(`UPDATE games SET local=?, player_side=?, bot_difficulty=?, started=?, pgn=?, ended=? WHERE id=?`, g.local, g.playerSide, g.botDifficulty, g.started, g.pgn, g.ended, id)
+	_, err := d.db.Exec(`UPDATE games SET local=?, player_side=?, turn=?, bot_difficulty=?, started=?, pgn=?, ended=? WHERE id=?`,
+		g.Local, g.PlayerSide, g.Turn, g.BotDifficulty, g.Started, g.Pgn, g.Ended, g.ID)
 	if err != nil {
 		return err
 	}
@@ -115,7 +120,7 @@ func (d *ConnSQLite) GetRecentGame() (*GameStateRow, error) {
 		}(rows)
 	}
 	row := d.db.QueryRow("SELECT * FROM games ORDER BY started DESC")
-	err = row.Scan(&state.ID, &state.local, &state.playerSide, &state.botDifficulty, &state.started, &state.pgn, &state.ended)
+	err = row.Scan(&state.ID, &state.Local, &state.PlayerSide, &state.Turn, &state.BotDifficulty, &state.Started, &state.Pgn, &state.Ended)
 	if err != nil {
 		return nil, err
 	}
