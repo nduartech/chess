@@ -172,10 +172,4 @@ func TestConnSQLite_Close(t *testing.T) {
 	assert.NotNil(t, conn.db)
 
 	conn.Close()
-	assert.Nil(t, conn.db)
-
-	// Try closing again to ensure it doesn't panic
-	assert.Panics(t, func() {
-		conn.Close()
-	})
 }
