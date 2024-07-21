@@ -193,20 +193,20 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m MelodyInte
 	})
 }
 
-type ChessAI interface {
+type ChessAIInterface interface {
 	MakeMove(game *chess.Game) *chess.Move
 }
 
-type ChessAIImpl struct {
+type ChessAI struct {
 	difficulty int
 	engine     *uci.Engine
 }
 
-func NewChessAI(difficulty int) ChessAI {
+func NewChessAI(difficulty int) ChessAIInterface {
 	if difficulty == 0 {
-		return &ChessAIImpl{difficulty: difficulty, engine: nil}
+		return &ChessAI{difficulty: difficulty, engine: nil}
 	} else {
-		return &ChessAIImpl{difficulty: difficulty, engine: getChessUCIEngine(difficulty)}
+		return &ChessAI{difficulty: difficulty, engine: getChessUCIEngine(difficulty)}
 	}
 }
 
@@ -273,7 +273,7 @@ func getChessUCIEngine(difficulty int) *uci.Engine {
 	return engine
 }
 
-func (ai *ChessAIImpl) MakeMove(game *chess.Game) *chess.Move {
+func (ai *ChessAI) MakeMove(game *chess.Game) *chess.Move {
 	if ai.engine == nil {
 		moves := game.ValidMoves()
 		move := moves[rand.Intn(len(moves))]
