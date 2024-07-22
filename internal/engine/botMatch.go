@@ -4,40 +4,12 @@ import (
 	"db"
 	"fmt"
 	"math/rand"
-	"net/http"
 	"strings"
 	"time"
 
 	"github.com/notnil/chess"
 	"github.com/notnil/chess/uci"
-	"github.com/olahol/melody"
 )
-
-type MelodyInterface interface {
-	HandleConnect(fn func(*melody.Session))
-	HandleDisconnect(fn func(*melody.Session))
-	HandlePong(fn func(*melody.Session))
-	HandleMessage(fn func(*melody.Session, []byte))
-	HandleMessageBinary(fn func(*melody.Session, []byte))
-	HandleSentMessage(fn func(*melody.Session, []byte))
-	HandleSentMessageBinary(fn func(*melody.Session, []byte))
-	HandleError(fn func(*melody.Session, error))
-	HandleClose(fn func(*melody.Session, int, string) error)
-	HandleRequest(w http.ResponseWriter, r *http.Request) error
-	HandleRequestWithKeys(w http.ResponseWriter, r *http.Request, keys map[string]any) error
-	Broadcast(msg []byte) error
-	BroadcastFilter(msg []byte, fn func(*melody.Session) bool) error
-	BroadcastOthers(msg []byte, s *melody.Session) error
-	BroadcastMultiple(msg []byte, sessions []*melody.Session) error
-	BroadcastBinary(msg []byte) error
-	BroadcastBinaryFilter(msg []byte, fn func(*melody.Session) bool) error
-	BroadcastBinaryOthers(msg []byte, s *melody.Session) error
-	Sessions() ([]*melody.Session, error)
-	Close() error
-	CloseWithMsg(msg []byte) error
-	Len() int
-	IsClosed() bool
-}
 
 func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m MelodyInterface, g *db.GameStateRow, d db.Conn) {
 	chessBot := NewChessAI(difficulty)
@@ -57,7 +29,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m MelodyInte
 		}
 		game = chess.NewGame(pgn)
 	}
-	m.HandleConnect(func(session *melody.Session) {
+	m.HandleConnect(func(session SessionInterface) {
 
 		err := session.Write([]byte("Init:" + fmt.Sprint(game.Position().Board().SquareMap())))
 		if err != nil {
@@ -105,7 +77,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m MelodyInte
 		session.Set("game", game)
 	})
 
-	m.HandleDisconnect(func(session *melody.Session) {
+	m.HandleDisconnect(func(session SessionInterface) {
 		gameSession, ok := session.Get("game")
 		if !ok {
 			panic("game not found")
@@ -116,7 +88,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m MelodyInte
 		_ = d.UpdateGame(g)
 	})
 
-	m.HandleMessage(func(session *melody.Session, bytes []byte) {
+	m.HandleMessage(func(session SessionInterface, bytes []byte) {
 		gameSession, ok := session.Get("game")
 		if !ok {
 			panic("game not found")

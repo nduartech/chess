@@ -3,6 +3,7 @@ package web
 import (
 	"components"
 	"db"
+	"engine"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -19,12 +20,13 @@ func Run() {
 	botDifficulty := components.ChooseBotDifficulty()
 
 	m := melody.New()
-	defer func(m *melody.Melody) {
+	s := engine.NewSymphony(m)
+	defer func(m *engine.Symphony) {
 		err := m.Close()
 		if err != nil {
 			panic(err)
 		}
-	}(m)
+	}(s)
 	checkForGame := func(next http.Handler) http.Handler {
 		local, err := db.InitGameDatabase("./local.sqlite3")
 		if err != nil {
@@ -36,7 +38,7 @@ func Run() {
 				next.ServeHTTP(w, r)
 				return
 			}
-			bot := components.NewBotGame(gameState.BotDifficulty, gameState.PlayerSide, gameState.Turn, m, gameState, local)
+			bot := components.NewBotGame(gameState.BotDifficulty, gameState.PlayerSide, gameState.Turn, s, gameState, local)
 			templ.Handler(bot).ServeHTTP(w, r)
 		})
 	}
@@ -72,7 +74,7 @@ func Run() {
 			fmt.Println(err)
 			http.NotFoundHandler().ServeHTTP(w, r)
 		}
-		bot := components.NewBotGame(diff, r.PathValue("color") == "white", r.PathValue("color") == "white", m, gameState, local)
+		bot := components.NewBotGame(diff, r.PathValue("color") == "white", r.PathValue("color") == "white", s, gameState, local)
 		templ.Handler(bot).ServeHTTP(w, r)
 	})
 
