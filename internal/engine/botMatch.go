@@ -171,7 +171,7 @@ type ChessAIInterface interface {
 
 type ChessAI struct {
 	difficulty int
-	engine     *uci.Engine
+	engine     UCIEngine
 }
 
 func NewChessAI(difficulty int) ChessAIInterface {
@@ -182,7 +182,13 @@ func NewChessAI(difficulty int) ChessAIInterface {
 	}
 }
 
-func getChessUCIEngine(difficulty int) *uci.Engine {
+type UCIEngine interface {
+	Run(cmds ...uci.Cmd) error
+	SearchResults() uci.SearchResults
+	Close() error
+}
+
+func getChessUCIEngine(difficulty int) UCIEngine {
 	engine, err := uci.New("stockfish")
 	if err != nil {
 		panic(err)
