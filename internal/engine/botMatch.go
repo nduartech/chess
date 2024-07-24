@@ -189,7 +189,7 @@ type UCIEngine interface {
 }
 
 func getChessUCIEngine(difficulty int) UCIEngine {
-	engine, err := uci.New("stockfish")
+	engine, err := uci.New("../../Stockfish/src/stockfish")
 	if err != nil {
 		panic(err)
 	}
