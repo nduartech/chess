@@ -4,6 +4,7 @@ import (
 	"db"
 	"fmt"
 	"math/rand"
+	"os"
 	"strings"
 	"time"
 
@@ -13,6 +14,12 @@ import (
 
 func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m MelodyInterface, g *db.GameStateRow, d db.Conn) {
 	chessBot := NewChessAI(difficulty)
+	//defer func(chessBot ChessAIInterface) {
+	//	err := chessBot.Close()
+	//	if err != nil {
+	//		panic(err)
+	//	}
+	//}(chessBot)
 	var game *chess.Game
 	if g == nil {
 		game = chess.NewGame()
@@ -86,6 +93,10 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m MelodyInte
 		g.Pgn = game.String()
 		g.Ended = game.Outcome() != chess.NoOutcome
 		_ = d.UpdateGame(g)
+		err := chessBot.Close()
+		if err != nil {
+			panic(err)
+		}
 	})
 
 	m.HandleMessage(func(session SessionInterface, bytes []byte) {
@@ -167,11 +178,16 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m MelodyInte
 
 type ChessAIInterface interface {
 	MakeMove(game *chess.Game) *chess.Move
+	Close() error
 }
 
 type ChessAI struct {
 	difficulty int
 	engine     UCIEngine
+}
+
+func (ai *ChessAI) Close() error {
+	return ai.engine.Close()
 }
 
 func NewChessAI(difficulty int) ChessAIInterface {
@@ -189,66 +205,65 @@ type UCIEngine interface {
 }
 
 func getChessUCIEngine(difficulty int) UCIEngine {
-	engine, err := uci.New("../../Stockfish/src/stockfish")
-	if err != nil {
-		panic(err)
-	}
+	fmt.Println(os.Getwd())
+	var eng *uci.Engine
+	var err error
 	if difficulty == 1 {
 		// set up engine to use stockfish exe
-		eng, err := uci.New("stockfish")
+		eng, err = uci.New("./Stockfish/src/stockfish")
 		if err != nil {
 			panic(err)
 		}
-		defer func(eng *uci.Engine) {
-			err := eng.Close()
-			if err != nil {
-				panic(err)
-			}
-		}(eng)
+		//defer func(eng UCIEngine) {
+		//	err := eng.Close()
+		//	if err != nil {
+		//		panic(err)
+		//	}
+		//}(eng)
 		// initialize uci with new game
-		if err := eng.Run(uci.CmdSetOption{Name: "UCI_LimitStrength", Value: "true"},
+		if err = eng.Run(uci.CmdSetOption{Name: "UCI_LimitStrength", Value: "true"},
 			uci.CmdSetOption{Name: "UCI_Elo", Value: "1320"},
 			uci.CmdUCI, uci.CmdIsReady, uci.CmdUCINewGame); err != nil {
 			panic(err)
 		}
 	} else if difficulty == 2 {
 		// set up engine to use stockfish exe
-		eng, err := uci.New("stockfish")
+		eng, err = uci.New("./Stockfish/src/stockfish")
 		if err != nil {
 			panic(err)
 		}
-		defer func(eng *uci.Engine) {
-			err := eng.Close()
-			if err != nil {
-				panic(err)
-			}
-		}(eng)
+		//defer func(eng UCIEngine) {
+		//	err := eng.Close()
+		//	if err != nil {
+		//		panic(err)
+		//	}
+		//}(eng)
 		// initialize uci with new game
-		if err := eng.Run(uci.CmdSetOption{Name: "UCI_LimitStrength", Value: "true"},
+		if err = eng.Run(uci.CmdSetOption{Name: "UCI_LimitStrength", Value: "true"},
 			uci.CmdSetOption{Name: "UCI_Elo", Value: "2255"},
 			uci.CmdUCI, uci.CmdIsReady, uci.CmdUCINewGame); err != nil {
 			panic(err)
 		}
 	} else {
 		// set up engine to use stockfish exe
-		eng, err := uci.New("stockfish")
+		eng, err = uci.New("./Stockfish/src/stockfish")
 		if err != nil {
 			panic(err)
 		}
-		defer func(eng *uci.Engine) {
-			err := eng.Close()
-			if err != nil {
-				panic(err)
-			}
-		}(eng)
+		//defer func(eng UCIEngine) {
+		//	err := eng.Close()
+		//	if err != nil {
+		//		panic(err)
+		//	}
+		//}(eng)
 		// initialize uci with new game
-		if err := eng.Run(uci.CmdSetOption{Name: "UCI_LimitStrength", Value: "true"},
+		if err = eng.Run(uci.CmdSetOption{Name: "UCI_LimitStrength", Value: "true"},
 			uci.CmdSetOption{Name: "UCI_Elo", Value: "3190"},
 			uci.CmdUCI, uci.CmdIsReady, uci.CmdUCINewGame); err != nil {
 			panic(err)
 		}
 	}
-	return engine
+	return eng
 }
 
 func (ai *ChessAI) MakeMove(game *chess.Game) *chess.Move {
