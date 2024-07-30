@@ -20,6 +20,10 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m MelodyInte
 	//		panic(err)
 	//	}
 	//}(chessBot)
+	chessMatch(difficulty, playerWhite, turn, m, g, d, chessBot)
+}
+
+func chessMatch(difficulty int, playerWhite bool, turn bool, m MelodyInterface, g *db.GameStateRow, d db.Conn, chessBot ChessAIInterface) {
 	var game *chess.Game
 	if g == nil {
 		game = chess.NewGame()
@@ -174,6 +178,7 @@ func ChessMatchWithBot(difficulty int, playerWhite bool, turn bool, m MelodyInte
 		}
 		session.Set("game", game)
 	})
+
 }
 
 type ChessAIInterface interface {
@@ -190,7 +195,7 @@ func (ai *ChessAI) Close() error {
 	return ai.engine.Close()
 }
 
-func NewChessAI(difficulty int) ChessAIInterface {
+func NewChessAI(difficulty int) *ChessAI {
 	if difficulty == 0 {
 		return &ChessAI{difficulty: difficulty, engine: nil}
 	} else {
