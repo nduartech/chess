@@ -78,14 +78,14 @@ func Run() {
 		templ.Handler(bot).ServeHTTP(w, r)
 	})
 
-	fmt.Println("Listening on :3000")
+	fmt.Println("Listening on :38538")
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		err := m.HandleRequest(w, r)
 		if err != nil {
 			panic(err)
 		}
 	})
-	err := http.ListenAndServe(":3000", nil)
+	err := http.ListenAndServe(":38538", nil)
 	if err != nil {
 		panic(err)
 	}

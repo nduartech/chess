@@ -215,7 +215,7 @@ func getChessUCIEngine(difficulty int) UCIEngine {
 	var err error
 	if difficulty == 1 {
 		// set up engine to use stockfish exe
-		eng, err = uci.New("./Stockfish/src/stockfish")
+		eng, err = uci.New("./Stockfish-master/src/stockfish")
 		if err != nil {
 			panic(err)
 		}
@@ -233,7 +233,7 @@ func getChessUCIEngine(difficulty int) UCIEngine {
 		}
 	} else if difficulty == 2 {
 		// set up engine to use stockfish exe
-		eng, err = uci.New("./Stockfish/src/stockfish")
+		eng, err = uci.New("./Stockfish-master/src/stockfish")
 		if err != nil {
 			panic(err)
 		}
@@ -251,7 +251,7 @@ func getChessUCIEngine(difficulty int) UCIEngine {
 		}
 	} else {
 		// set up engine to use stockfish exe
-		eng, err = uci.New("./Stockfish/src/stockfish")
+		eng, err = uci.New("./Stockfish-master/src/stockfish")
 		if err != nil {
 			panic(err)
 		}
