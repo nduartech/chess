@@ -28,7 +28,7 @@ func Run() {
 		}
 	}(s)
 	checkForGame := func(next http.Handler) http.Handler {
-		local, err := db.InitGameDatabase("./local.sqlite3")
+		local, err := db.InitGameDatabase("./.yaca.sqlite3")
 		if err != nil {
 			panic(err)
 		}

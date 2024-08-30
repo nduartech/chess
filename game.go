@@ -3,16 +3,17 @@ package main
 import (
 	"archive/zip"
 	"fmt"
-	"internal/web"
 	"io"
 	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"web"
 )
 
 func main() {
 	_ = build_stockfish()
+
 	web.Run()
 }
 
